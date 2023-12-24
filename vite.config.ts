@@ -5,6 +5,10 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import pkg from './package.json'
+import VueSetupExtend from 'vite-plugin-vue-setup-extend';
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -17,6 +21,13 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [
       vue(),
+      VueSetupExtend(),
+      AutoImport({
+          resolvers: [ElementPlusResolver()]
+      }),
+      Components({
+          resolvers: [ElementPlusResolver()]
+      }),
       electron([
         {
           // Main process entry file of the Electron App.
@@ -73,6 +84,9 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer process
       renderer(),
     ],
+    optimizeDeps: {
+        include: ['schart.js']
+    },
     server: process.env.VSCODE_DEBUG && (() => {
       const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
       return {
